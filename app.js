@@ -6,6 +6,14 @@ var data = require('./data.json').results
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
+
+let allowCrossDomain = function(req, res, next) {
+	res.header('Access-Control-Allow-Origin', "*");
+	res.header('Access-Control-Allow-Headers', "*");
+	next();
+  }
+  app.use(allowCrossDomain);
+
 app.get("/:kind",(req,res)=>{
 	var kind=req.params.kind
 	if (req.query.albumName) {
@@ -108,7 +116,7 @@ app.post("/:kind/add",(req,res)=>{
 	}
 })
 
-const port = 3000
+const port = 3001
 app.listen(port, () => console.log(`Listening at http://localhost:${port}`))
 
 /*
