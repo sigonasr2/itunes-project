@@ -63,6 +63,21 @@ app.post("/delete",(req,res)=>{
 	}
 })
 
+app.get("/artist",(req,res)=>{
+	if (req.query.id) {
+		var artistId = Number(req.query.id);
+		var filteredSongs = data.filter((song)=>artistId===song.artistId);
+		res.send(JSON.stringify(filteredSongs))
+	} else 
+	if (req.query.name) {
+		var artistName = req.query.name;
+		var filteredSongs = data.filter((song)=>song.artistName.includes(artistName));
+		res.send(JSON.stringify(filteredSongs))
+	} else {
+		res.status(400).send("id or name not specified.");
+	}
+})
+
 function SongIdDoesNotExist(trackId) {
 	return data.filter((song)=>trackId===song.trackId).length===0;
 }
