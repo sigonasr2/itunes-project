@@ -28,6 +28,21 @@
   color: #61dafb;
 }
 
+.gradient {
+	background-image: radial-gradient(#DDDDFF,#F0F0F0);
+}
+.gradient:hover {
+	background-image: radial-gradient(#DDDDFF,#FFFFDD);
+}
+.shadow {
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.bottomright {
+	position:"absolute"; 
+	right:80vw;
+	bottom:80vh;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

@@ -1,52 +1,92 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
+const playerWidth=320;
+
+const PreviewWindow = (props) => {
+	return (props.src!==null)?<div>
+				<iframe style={{position:"absolute",
+				left:(window.innerWidth-playerWidth)+"px",bottom:-window.scrollY+"px"}} className="bottomright" id="previewWindow" src={props.src}/>
+			</div>:<React.Fragment/>;
+}
+
 
 const RadioButton = (props) => {
-
   return (
     <React.Fragment>
-      <br></br>
-      <label for={props.name}>{props.name}</label>
+      <label for={props.name} className="ml-4">{props.displayName}</label>
       <input type='radio' name="media-selection" value={props.name} id={props.name}
-        onClick={() => props.setMediaType(props.name)}/>
+        onClick={() => props.setMediaType(props.name)} checked={props.mediaType===props.name}/>
     </React.Fragment>
   )
 }
 
 const MediaContainer = (props) => {
-  const [previewOn, setPreviewOn] = useState(false)
-
-  const togglePreview = (counter, sourceUrl) => {
-    document.getElementById(counter).innerHTML = "<iframe src='" + sourceUrl + "'></iframe>"
+  const togglePreview = (setPreview,sourceUrl) => {
+	  //console.log(setPreview+","+sourceUrl)
+    setPreview(sourceUrl);
   }
 
   return (
     <div>
-      {props.data.map((media, counter) => <div><img src={media.artworkUrl100} alt={media.artistName} /><span>{media.trackName} </span>
-        <span>{media.trackId} </span> <span>{media.collectionName} </span> <span>{media.collectionId} </span>
-        <span>{media.artistId} </span> <span>{media.artistName} </span> <button type='button' onClick={() => togglePreview(counter, media.previewUrl)}>Toggle Preview</button>
-        <div id={counter}></div><hr/></div>)}
-  </div>)
+      {props.data.map((media, counter) => 
+	  <React.Fragment>
+	  <div className="card pt-3 gradient">
+		  <div className="row">
+			  <div className="offset-md-2 col-md-6">
+				<h4>{media.trackName}</h4>
+			 <b>{media.artistName} </b>: <span>{media.collectionName} </span> 
+			  </div>
+			  <div className="col-md-3 text-center">
+				<img className="shadow" src={media.artworkUrl100} alt={media.artistName}/>
+			  </div>
+			</div>
+			<div className="row mb-3">
+			  <div className="offset-md-8 col-md-3 text-center">
+				<button type='button' onClick={() => togglePreview(props.setPreview,media.previewUrl)}>Show Preview</button>
+				</div>
+			</div>
+		</div>
+		</React.Fragment>)}
+	</div>)
 }
 
 
 const App = () => {
   const [mediaType, setMediaType] = useState("song")
   const [currentData, setCurrentData] = useState([])
+  const [currentPreview, setPreview] = useState(null)
+  const [searchQuery, setSearchQuery] = useState("")
 
-  useEffect(() => {fetch(`http://localhost:3001/${mediaType}`)
+  useEffect(() => {fetch(`http://localhost:3002/${mediaType}`)
   .then(response => response.json())
-  .then(data => {console.log(data); setCurrentData(data)})}, [mediaType])
+  .then(data => {/*console.log(data);*/ setCurrentData(data)})}, [mediaType])
+  
+  function setSearch(e){
+	setSearchQuery(e.target.value)
+	//console.log(e.target.value);
+  }
 
   return (
     <React.Fragment>
-      Current media type: {mediaType}
-        <RadioButton name="song" setMediaType={setMediaType} />
-        <RadioButton name="music-video" setMediaType={setMediaType} />
-        <RadioButton name="feature-movie" setMediaType={setMediaType} />
-
-        <MediaContainer data={currentData}/>
+		<div className="container">
+			<div className="row">
+				<div className="text-center col-md-12">
+					Search Title/Artist/Album: <input style={{"width":"480px","height":"32px"}} type="text" onChange={(e)=>{setSearch(e)}}/>
+				</div>
+			</div>
+			<div className="row">
+				<div className="offset-md-2 col-md-8">
+					<RadioButton displayName="Songs" mediaType={mediaType} name="song" setMediaType={setMediaType} />
+					<RadioButton displayName="Music Videos" mediaType={mediaType} name="music-video" setMediaType={setMediaType} />
+					<RadioButton displayName="Movies" mediaType={mediaType} name="feature-movie" setMediaType={setMediaType} />
+				</div>
+			</div>
+			<MediaContainer data={(searchQuery.length>0)?currentData.filter((song)=>{
+				return (song.trackName.toLowerCase().includes(searchQuery.toLowerCase())||song.collectionName.toLowerCase().includes(searchQuery.toLowerCase())||song.artistName.toLowerCase().includes(searchQuery.toLowerCase()))
+			}):currentData} setPreview={setPreview}/>
+			<PreviewWindow src={currentPreview}/>
+		</div>
     </React.Fragment>
   )
 }
