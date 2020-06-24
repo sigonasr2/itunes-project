@@ -4,6 +4,15 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
+document.addEventListener("scroll",()=>{
+	var obj = document.getElementById("previewWindow");
+	if (obj) {
+		obj.style.position="absolute"; 
+		obj.style.right=window.scrollX+"px";
+		obj.style.bottom=-window.scrollY+"px";
+	}
+})
+	
 ReactDOM.render(
   <React.StrictMode>
     <App />
