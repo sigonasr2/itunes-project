@@ -26,7 +26,20 @@ const MediaContainer = (props) => {
 	  //console.log(setPreview+","+sourceUrl)
     setPreview(sourceUrl);
   }
+	function formatDate(date) {
+		var d = new Date(date),
+			month = '' + (d.getMonth() + 1),
+			day = '' + d.getDate(),
+			year = d.getFullYear();
 
+		if (month.length < 2) 
+			month = '0' + month;
+		if (day.length < 2) 
+			day = '0' + day;
+
+		return [year, month, day].join('-');
+	}
+	
   return (
     <div>
       {props.data.map((media, counter) => 
@@ -35,7 +48,9 @@ const MediaContainer = (props) => {
 		  <div className="row">
 			  <div className="offset-md-2 col-md-6">
 				<h4>{media.trackName}</h4>
-			 <b>{media.artistName} </b>: <span>{media.collectionName} </span> 
+			 <b>{media.artistName} </b>: <span>{media.collectionName}
+				<br/><br/>${media.trackPrice}<br/>{media.longDescription}			 
+				</span> 
 			  </div>
 			  <div className="col-md-3 text-center">
 				<img className="shadow" src={media.artworkUrl100} alt={media.artistName}/>
@@ -83,7 +98,7 @@ const App = () => {
 				</div>
 			</div>
 			<MediaContainer data={(searchQuery.length>0)?currentData.filter((song)=>{
-				return (song.trackName.toLowerCase().includes(searchQuery.toLowerCase())||song.collectionName.toLowerCase().includes(searchQuery.toLowerCase())||song.artistName.toLowerCase().includes(searchQuery.toLowerCase()))
+				return (song.trackName && song.trackName.toLowerCase().includes(searchQuery.toLowerCase())||song.collectionName && song.collectionName.toLowerCase().includes(searchQuery.toLowerCase())||song.artistName && song.artistName.toLowerCase().includes(searchQuery.toLowerCase()))
 			}):currentData} setPreview={setPreview}/>
 			<PreviewWindow src={currentPreview}/>
 		</div>
